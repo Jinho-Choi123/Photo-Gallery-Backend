@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kpqd7dd2x+#d#x*onv+i0p^py=ka6pbdf%thvh(-c1jfhm^3eq'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -75,8 +76,16 @@ WSGI_APPLICATION = 'Photo_Gallery.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': os.environ.get('MONGO_INITDB_DATABASE'),
+        'CLIENT': {
+            'host': '172.17.0.1',
+            'port': 27017,
+            'username': os.environ.get('MONGO_INITDB_ROOT_USERNAME'),
+            'password': os.environ.get('MONGO_INITDB_ROOT_PASSWORD'),
+            'authSource': os.environ.get('MONGO_INITDB_DATABASE'),
+            'authMechanism': os.environ.get('MONGO_INITDB_AUTH_MECHANISM')
+        }
     }
 }
 
