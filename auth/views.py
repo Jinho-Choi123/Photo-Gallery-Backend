@@ -13,6 +13,6 @@ from rest_framework.permissions import AllowAny
 class RegisterView(APIView):
     def post(self, request):
         register = RegisterSerializer(data=request.data)
+        register.is_valid(raise_exception=True)
         register.create(request.data)
-        return Response(status=status.HTTP_201_CREATED)
-        
+        return Response({"msg": "Account Created"}, status=status.HTTP_201_CREATED)
