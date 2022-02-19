@@ -23,4 +23,5 @@ urlpatterns = [
     path('checkserver/', CheckServerView.as_view()),
     path('admin/', admin.site.urls),
     path('auth/', include(auth_urls)),
+    path('gallery/', include('photos.urls')),
 ]
