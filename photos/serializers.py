@@ -9,6 +9,25 @@ class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
         fields = ('id', 'image', 'uploaded_at', 'galleryId')
+    
+    def validate(self, data):
+        galleryId = data['galleryId']
+        #validate if galleryId is valid
+        if Gallery.objects.filter(id=galleryId).exists() == False:
+            raise serializers.ValidationError("Gallery does not exist")
+        #validate request user is the owner of gallery
+        userId = self.context['user']
+        if Gallery.objects.get(id=galleryId).user != User.objects.get(id=userId):
+            raise serializers.ValidationError("You are not the owner of this gallery")
+        return data
+    
+    def create(self, validated_data):
+        photo = Photo.objects.create(
+            image = validated_data['image'],
+            galleryId = validated_data['galleryId'],
+        )
+        photo.save()
+        return photo
 
 class GallerySerializer(serializers.ModelSerializer):
 
@@ -23,7 +42,6 @@ class GallerySerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'description', 'created_at')
     
     def validate(self, data):
-        #check if user is logged in
         return data
 
     def create(self, validated_data):
