@@ -7,6 +7,10 @@ from .serializers import RegisterSerializer
 
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+
+import logging
+logger = logging.getLogger(__name__)
 
 ##Register New Users
 @permission_classes((AllowAny,))
@@ -15,4 +19,24 @@ class RegisterView(APIView):
         register = RegisterSerializer(data=request.data)
         register.is_valid(raise_exception=True)
         register.create(request.data)
+        username = register.username
         return Response({"msg": "Account Created"}, status=status.HTTP_201_CREATED)
+
+@permission_classes((AllowAny,))
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        logger.error(username)
+        logger.error(password)
+        user = User.objects.get(username=username)
+        if user.check_password(password):
+            refresh = RefreshToken.for_user(user)
+            logger.error(refresh)
+            return Response({
+                "username": str(username),
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }, status=status.HTTP_200_OK)
+            
+        return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
