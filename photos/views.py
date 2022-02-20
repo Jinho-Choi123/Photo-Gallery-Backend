@@ -41,12 +41,13 @@ class GalleryView(APIView):
 
 
 #Upload and get Photo
-class Photo(APIView):
+class PhotoView(APIView):
     def get(self, request):
         photo = Photo.objects.filter(galleryId = request.GET['galleryId'])
         photo_serializer = PhotoSerializer(photo, many=True)
         return Response(photo_serializer.data, status=status.HTTP_200_OK)
     def post(self, request):
+        print(request.data)
         photo_serializer = PhotoSerializer(data=request.data, context = {'user': request.user.id}, many=True)
         photo_serializer.is_valid(raise_exception=True)
         photo_serializer.create(request.data)
@@ -64,3 +65,17 @@ class Photo(APIView):
         except:
             return Response({"error": "Unknown Error"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"msg": "Photo Deleted"}, status=status.HTTP_200_OK)
+    
+    def put(self, request):
+        photo_serializer = PhotoSerializer(data = request.data, context = {'user': request.user.id}, many=True)
+        photo_serializer.is_valid(raise_exception=True)
+
+        #check if it is move
+        if(request.data['action'] == 'move'):
+            photo_serializer.move(request.data)
+            return Response({"msg": "Photo Moved"}, status=status.HTTP_200_OK)
+        #check if it is copy
+        if(request.data['action'] == 'copy'):
+            photo_serializer.copy(request.data)
+            return Response({"msg": "Photo Copied"}, status=status.HTTP_200_OK)
+        return Response({"error": "Unknown Action"}, status=status.HTTP_400_BAD_REQUEST)

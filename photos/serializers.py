@@ -23,7 +23,7 @@ class PhotoSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         #limit max size of photo to 25MB
-        size = validated_data['image'].size
+        size = validated_data['image']
         if size > 25000000:
             raise serializers.ValidationError("Photo size is too large")
 
@@ -35,8 +35,8 @@ class PhotoSerializer(serializers.ModelSerializer):
         photo.save()
         return photo
     def delete(self, validated_data):
-        photo = Photo.objects.get(id = validated_data['id'])
-        photo.delete()
+        photos = Photo.objects.filter(id__in = validated_data['id'])
+        photos.delete()
         return photo
     def move(self, validated_data):
         photo = Photo.objects.get(id = validated_data['id'])
