@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.urls import path
-from .views import GalleryCreate
+from .views import GalleryView
+import re 
 
 urlpatterns = [
-    path('create/', GalleryCreate.as_view(), name='gallery_create'),
+    path('<galleryId>/', GalleryView.as_view()),
+    path('', GalleryView.as_view()),
 ]

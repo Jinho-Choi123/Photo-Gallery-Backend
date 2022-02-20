@@ -12,5 +12,5 @@ class Photo(models.Model):
     image = models.ImageField(upload_to='photos/%Y/%m/%d')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     galleryId = models.ForeignKey(Gallery, on_delete=models.CASCADE, related_name="photos")
-
+    size = models.IntegerField(default=0)
 
